@@ -18,12 +18,11 @@ public class ChatServer {
 	private static int usersConnected = 0;
 
 	public static void main(String[] args) {
-		System.out.println(new Date() + "\nChat Server online.");
+		System.out.println(new Date() + "\nChat Server online.\n");
 
 		try (ServerSocket chatServer = new ServerSocket(PORT)) {
 			while (true) {
 				Socket socket = chatServer.accept();
-				System.out.println("IP: " + socket.getInetAddress().getHostAddress() + " connected.");
 				new ClientHandler(socket).start();
 			}
 		} catch (IOException ioe) {}
@@ -69,6 +68,7 @@ public class ChatServer {
                 }
 
                 out.println("NAME_ACCEPTED");
+                System.out.println(name + " connected. IP: " + socket.getInetAddress().getHostAddress());
                 userNames.add(name);
                 names.add(serverSideName);
                 writers.add(out);
@@ -91,6 +91,8 @@ public class ChatServer {
                 	writer.println("DISCONNECT" + name);
                 }
 	        } finally {
+	        	System.out.println(name + " disconnected.");
+	        	userNames.remove(name);
 	            names.remove(serverSideName);
 	            writers.remove(out);
 	            usersConnected--;
