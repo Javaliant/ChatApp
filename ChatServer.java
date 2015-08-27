@@ -35,7 +35,7 @@ public class ChatServer {
 			nameList.append(", ").append(name);
 		}
 
-		return nameList.substring(2);
+		return "In lobby: " + nameList.substring(2);
 	}
 
 	private static class ClientHandler extends Thread {
