@@ -69,6 +69,8 @@ public class ChatServer {
 
                 out.println("NAME_ACCEPTED");
                 System.out.println(name + " connected. IP: " + socket.getInetAddress().getHostAddress());
+
+                messageAll("CONNECT" + name);
                 userNames.add(name);
                 names.add(serverSideName);
                 writers.add(out);
@@ -82,25 +84,30 @@ public class ChatServer {
 	                    continue;
 	                }
 
-	                for (PrintWriter writer : writers) {
-	                	writer.println("MESSAGE " + name + ": " + input);
-	                }
+	                messageAll("MESSAGE " + name + ": " + input);
 	            }
 			} catch (IOException e) {
-                for (PrintWriter writer : writers) {
-                	writer.println("DISCONNECT" + name);
-                }
-	        } finally {
-	        	System.out.println(name + " disconnected.");
-	        	userNames.remove(name);
+				System.out.println(name + " disconnected.");
+				userNames.remove(name);
 	            names.remove(serverSideName);
 	            writers.remove(out);
-	            usersConnected--;
-
+				messageAll("DISCONNECT" + name);
+				usersConnected--;
+	        } finally { 	
 	            try {
 	                socket.close();
 	            } catch (IOException e) {}
 	        }
+		}
+	}
+
+	private static void messageAll(String... messages) {
+		if (!writers.isEmpty()){
+			for (String message : messages) {
+				for (PrintWriter writer : writers) {
+            		writer.println(message);
+        		}
+			}
 		}
 	}
 }

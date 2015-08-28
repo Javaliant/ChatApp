@@ -60,25 +60,28 @@ public class ChatClient extends Application {
 	            		String line = in.readLine();
 
 			            if (line.startsWith("SUBMIT_NAME")) {
-			            	FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Choose a screen name"));
+			            	FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Choose a screen name:"));
 			            	Platform.runLater(futureTask);
 			            	try {
 			            		out.println(futureTask.get());
 			            	} catch(InterruptedException | ExecutionException ex) {}
 			            } else if (line.startsWith("RESUBMIT_NAME")) {
-			            	FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Duplicate name. Try another"));
+			            	FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Duplicate name. Try another:"));
 			            	Platform.runLater(futureTask);
 			            	try {
 			            		out.println(futureTask.get());
 			            	} catch(InterruptedException | ExecutionException ex) {}
 			            } else if (line.startsWith("NAME_ACCEPTED")) {
 			                textField.setEditable(true);
+			                Platform.runLater(() -> textField.requestFocus());
 			            } else if (line.startsWith("INFO")) {
-			            	messageArea.appendText("Users connected: " + line.charAt(4) + '\n' + line.substring(5) + '\n');
+			            	messageArea.appendText("Users connected: " + line.charAt(4) + '\n' + line.substring(5) + "\n\n");
+			            } else if (line.startsWith("CONNECT")) {
+			            	messageArea.appendText(line.substring(7) + " has connected.\n\n");
 			            } else if (line.startsWith("MESSAGE")) {
 			                messageArea.appendText(line.substring(8) + '\n');
 			            } else if (line.startsWith("DISCONNECT")) {
-			            	messageArea.appendText(line.substring(10) + " has disconnected." + '\n');
+			            	messageArea.appendText(line.substring(10) + " has disconnected.\n\n");
 			            }
 			        } 
         		} catch(IOException ioe) {
