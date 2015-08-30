@@ -87,12 +87,14 @@ public class ChatServer {
 	                messageAll("MESSAGE " + name + ": " + input);
 	            }
 			} catch (IOException e) {
-				System.out.println(name + " disconnected.");
-				userNames.remove(name);
-	            names.remove(serverSideName);
-	            writers.remove(out);
-				messageAll("DISCONNECT" + name);
-				usersConnected--;
+				if (name != null) {
+					System.out.println(name + " disconnected.");
+					userNames.remove(name);
+	            	names.remove(serverSideName);
+	            	writers.remove(out);
+					messageAll("DISCONNECT" + name);
+					usersConnected--;
+				}	
 	        } finally { 	
 	            try {
 	                socket.close();
