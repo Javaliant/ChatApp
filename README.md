@@ -1,5 +1,5 @@
 #A Chat Application
-[![Code Review](http://www.zomis.net/codereview/shield/?qid=102020)](http://codereview.stackexchange.com/q/102020/49181)
+[![Code Review](http://www.zomis.net/codereview/shield/?qid=102020)](http://codereview.stackexchange.com/q/102020/49181&mode=score)
 
 - Network based.
 - Extensibile server.
@@ -7,4 +7,4 @@
 
 Part of a series of simple apps made for the sake of learning.
 
-Dedicated to my KU friends.
+Dedicated to my KU friends.	
