@@ -123,7 +123,7 @@ public class ChatClient extends Application {
     		dialog.setTitle("Ascending to the fourth floor");
     		dialog.setHeaderText("Screen name selection");
     		dialog.setContentText(message);
-    		dialog.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("Icon.jpg"))));
+    		dialog.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("banner.jpg"))));
     		return dialog.showAndWait().get();
 		}
 	}
