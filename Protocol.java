@@ -1,4 +1,6 @@
-/* Author: Luigi Vincent */
+/* Author: Luigi Vincent
+* enum to handle Server-Client I/O
+*/
 
 public enum Protocol {
 	SUBMIT,
