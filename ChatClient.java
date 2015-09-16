@@ -1,4 +1,8 @@
-/* Author: Luigi Vincent */
+/* Author: Luigi Vincent
+*
+* To use locally, simply change SERVER_ADDRESS to target computer ip.
+* To use over internet, provide either directly connected server ip or public ip, with port forwarding rules.
+*/
 
 import java.io.BufferedReader;
 import java.io.IOException;

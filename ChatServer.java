@@ -1,4 +1,8 @@
-/* Author: Luigi Vincent */
+/* Author: Luigi Vincent
+*
+* TODO: add meaningful logging for exceptions
+* e.g. Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex)
+*/
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,3 +1,5 @@
+/* Author: Luigi Vincent */
+
 public enum Protocol {
 	SUBMIT,
 	RESUBMIT,
