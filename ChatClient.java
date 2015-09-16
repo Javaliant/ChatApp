@@ -77,29 +77,34 @@ public class ChatClient extends Application {
 				while (true) {
 	            	String line = in.readLine();
 
-			        if (line.startsWith("SUBMIT_NAME")) {
+			        if (line.startsWith(Protocol.SUBMIT.name())) {
 			            FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Choose a screen name:"));
 			            Platform.runLater(futureTask);
 			            try {
 			            	out.println(futureTask.get());
 			            } catch(InterruptedException | ExecutionException ex) {}
-			        } else if (line.startsWith("RESUBMIT_NAME")) {
+			        } else if (line.startsWith(Protocol.RESUBMIT.name())) {
 			            FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Duplicate name. Try another:"));
 			            Platform.runLater(futureTask);
 			            try {
 			            	out.println(futureTask.get());
 			            } catch(InterruptedException | ExecutionException ex) {}
-			        } else if (line.startsWith("NAME_ACCEPTED")) {
+			        } else if (line.startsWith(Protocol.ACCEPT.name())) {
 			             textField.setEditable(true);
 			            Platform.runLater(() -> textField.requestFocus());
-			        } else if (line.startsWith("INFO")) {
-			            messageArea.appendText("Users connected: " + line.charAt(4) + '\n' + line.substring(5) + "\n\n");
-			        } else if (line.startsWith("CONNECT")) {
-			            messageArea.appendText(line.substring(7) + " has connected.\n\n");
-			        } else if (line.startsWith("MESSAGE")) {
-			            messageArea.appendText(line.substring(8) + '\n');
-			        } else if (line.startsWith("DISCONNECT")) {
-			            messageArea.appendText(line.substring(10) + " has disconnected.\n\n");
+			        } else if (line.startsWith(Protocol.INFORM.name())) {
+			        	int delimiter = line.indexOf(',');
+            			messageArea.appendText(
+            				String.format("Users connected: %s%n%s%n%n",
+            					line.substring(Protocol.INFORM.index(), delimiter), line.substring(delimiter + 1)
+            				)
+            			);
+			        } else if (line.startsWith(Protocol.CONNECT.name())) {
+			            messageArea.appendText(line.substring(Protocol.CONNECT.index()) + " has connected.\n\n");
+			        } else if (line.startsWith(Protocol.MESSAGE.name())) {
+			            messageArea.appendText(line.substring(Protocol.MESSAGE.index()) + '\n');
+			        } else if (line.startsWith(Protocol.DISCONNECT.name())) {
+			            messageArea.appendText(line.substring(Protocol.DISCONNECT.index()) + " has disconnected.\n\n");
 			        }
 			    } 
         	} catch(IOException ioe) {

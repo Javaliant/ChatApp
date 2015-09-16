@@ -29,7 +29,7 @@ public class ChatServer {
 	}
 
 	private static String names() {
-		return "In lobby: " + String.join(",", userNames);
+		return "In lobby: " + String.join(", ", userNames);
 	}
 
 	private static class ClientHandler implements Runnable {
@@ -49,27 +49,27 @@ public class ChatServer {
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                out.println("SUBMIT_NAME");
+                out.println(Protocol.SUBMIT);
                 out.flush();
                 name = in.readLine();
                 serverSideName = name.toLowerCase();
 
                 synchronized (names) {
                 	while (names.contains(serverSideName) || name == null || name.trim().isEmpty()) {
-                		out.println("RESUBMIT_NAME");
+                		out.println(Protocol.RESUBMIT);
                 		name = in.readLine();
                 		serverSideName = name.toLowerCase();
                 	}
                 }
 
-                out.println("NAME_ACCEPTED");
+                out.println(Protocol.ACCEPT);
                 System.out.println(name + " connected. IP: " + socket.getInetAddress().getHostAddress());
 
-                messageAll("CONNECT" + name);
+                messageAll(Protocol.CONNECT + name);
                 userNames.add(name);
                 names.add(serverSideName);
                 writers.add(out);
-                out.println("INFO" + ++usersConnected + names());
+                out.println(Protocol.INFORM.name() + ++usersConnected + ',' + names());
               
 
                	while (true) {
@@ -79,7 +79,7 @@ public class ChatServer {
 	                    continue;
 	                }
 
-	                messageAll("MESSAGE " + name + ": " + input);
+	                messageAll(Protocol.MESSAGE + name + ": " + input);
 	            }
 			} catch (IOException e) {
 				if (name != null) {
@@ -87,7 +87,7 @@ public class ChatServer {
 					userNames.remove(name);
 	            	names.remove(serverSideName);
 	            	writers.remove(out);
-					messageAll("DISCONNECT" + name);
+					messageAll(Protocol.DISCONNECT + name);
 					usersConnected--;
 				}	
 	        } finally { 	
