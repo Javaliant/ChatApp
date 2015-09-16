@@ -23,22 +23,16 @@ public class ChatServer {
 		try (ServerSocket chatServer = new ServerSocket(PORT)) {
 			while (true) {
 				Socket socket = chatServer.accept();
-				new ClientHandler(socket).start();
+				new Thread(new ClientHandler(socket)).start();
 			}
 		} catch (IOException ioe) {}
 	}
 
 	private static String names() {
-		StringBuilder nameList = new StringBuilder();
-
-		for (String name : userNames) {
-			nameList.append(", ").append(name);
-		}
-
-		return "In lobby: " + nameList.substring(2);
+		return "In lobby: " + String.join(",", userNames);
 	}
 
-	private static class ClientHandler extends Thread {
+	private static class ClientHandler implements Runnable {
 		private String name;
 		private String serverSideName;
 		private Socket socket;
@@ -56,6 +50,7 @@ public class ChatServer {
                 out = new PrintWriter(socket.getOutputStream(), true);
 
                 out.println("SUBMIT_NAME");
+                out.flush();
                 name = in.readLine();
                 serverSideName = name.toLowerCase();
 
@@ -104,12 +99,14 @@ public class ChatServer {
 	}
 
 	private static void messageAll(String... messages) {
-		if (!writers.isEmpty()){
-			for (String message : messages) {
-				for (PrintWriter writer : writers) {
-            		writer.println(message);
-        		}
-			}
+		if (writers.isEmpty()) {
+			return;
+		}
+		
+		for (String message : messages) {
+			for (PrintWriter writer : writers) {
+            	writer.println(message);
+        	}
 		}
 	}
 }

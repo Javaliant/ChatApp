@@ -1,5 +1,5 @@
 #A Chat Application
-[![Code Review](http://www.zomis.net/codereview/shield/?qid=102020)](http://codereview.stackexchange.com/q/102020/49181&mode=score)
+[![Code Review](http://www.zomis.net/codereview/shield/?qid=102020&mode=score)](http://codereview.stackexchange.com/q/102020/49181)
 
 - Network based.
 - Extensibile server.
