@@ -1,7 +1,10 @@
 /* Author: Luigi Vincent
 *
-* TODO: add meaningful logging for exceptions
-* e.g. Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex)
+* TODO: 
+* add meaningful logging for exceptions
+*   e.g. Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex)
+*
+* Refactor to use be as non-static as possible
 */
 
 import java.io.BufferedReader;
@@ -10,18 +13,23 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Scanner;
 
 public class ChatServer {
-	private static final int PORT = 9001;
-	private static HashSet<String> names = new HashSet<>();
-	private static HashSet<String> userNames = new HashSet<>();
-	private static HashSet<PrintWriter> writers = new HashSet<>();
-	private static int usersConnected = 0;
+	private static final int PORT = 5290;
+	private static Set<String> names;
+	private static Set<String> userNames;
+	private static Set<PrintWriter> writers;
 
 	public static void main(String[] args) {
+		names = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		userNames = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		writers = Collections.newSetFromMap(new ConcurrentHashMap<PrintWriter, Boolean>());
+
 		System.out.println(new Date() + "\nChat Server online.\n");
 
 		try (ServerSocket chatServer = new ServerSocket(PORT)) {
@@ -54,16 +62,13 @@ public class ChatServer {
                 out = new PrintWriter(socket.getOutputStream(), true);
 
                 out.println(Protocol.SUBMIT);
-                out.flush();
                 name = in.readLine();
                 serverSideName = name.toLowerCase();
 
-                synchronized (names) {
-                	while (names.contains(serverSideName) || name == null || name.trim().isEmpty()) {
-                		out.println(Protocol.RESUBMIT);
-                		name = in.readLine();
-                		serverSideName = name.toLowerCase();
-                	}
+                while (names.contains(serverSideName) || name == null || name.trim().isEmpty()) {
+                	out.println(Protocol.RESUBMIT);
+                	name = in.readLine();
+                	serverSideName = name.toLowerCase();
                 }
 
                 out.println(Protocol.ACCEPT);
@@ -73,13 +78,13 @@ public class ChatServer {
                 userNames.add(name);
                 names.add(serverSideName);
                 writers.add(out);
-                out.println(Protocol.INFORM.name() + ++usersConnected + ',' + names());
+                out.println(Protocol.INFORM.name() + userNames.size() + ',' + names());
               
 
                	while (true) {
 	                String input = in.readLine();
 
-	                if (input == null || input.isEmpty()) {
+	                if (input == null || input.trim().isEmpty()) {
 	                    continue;
 	                }
 
@@ -92,7 +97,6 @@ public class ChatServer {
 	            	names.remove(serverSideName);
 	            	writers.remove(out);
 					messageAll(Protocol.DISCONNECT + name);
-					usersConnected--;
 				}	
 	        } finally { 	
 	            try {

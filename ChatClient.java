@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -28,10 +29,10 @@ import javafx.stage.Stage;
 
 
 public class ChatClient extends Application {
-	final static int PORT = 9001;
+	final static int PORT = 5290;
 	final static String SERVER_ADDRESS = "localhost";
-	BufferedReader in;
-	PrintWriter out;
+	private BufferedReader in;
+	private PrintWriter out;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -75,24 +76,16 @@ public class ChatClient extends Application {
 		public Void call() {
 			try {
 				Socket socket = new Socket(SERVER_ADDRESS, PORT);
-				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.defaultCharset()));
 				out = new PrintWriter(socket.getOutputStream(), true);
 
 				while (true) {
 	            	String line = in.readLine();
 
 			        if (line.startsWith(Protocol.SUBMIT.name())) {
-			            FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Choose a screen name:"));
-			            Platform.runLater(futureTask);
-			            try {
-			            	out.println(futureTask.get());
-			            } catch(InterruptedException | ExecutionException ex) {}
+			        	createFutureTask("Choose a screen name:");
 			        } else if (line.startsWith(Protocol.RESUBMIT.name())) {
-			            FutureTask<String> futureTask = new FutureTask<>(new NamePrompt("Duplicate name. Try another:"));
-			            Platform.runLater(futureTask);
-			            try {
-			            	out.println(futureTask.get());
-			            } catch(InterruptedException | ExecutionException ex) {}
+			        	createFutureTask("Duplicate name. Try another:");
 			        } else if (line.startsWith(Protocol.ACCEPT.name())) {
 			             textField.setEditable(true);
 			            Platform.runLater(() -> textField.requestFocus());
@@ -116,6 +109,14 @@ public class ChatClient extends Application {
         	}
         		
         	return null;
+		}
+
+		private void createFutureTask(String message) {
+			FutureTask<String> futureTask = new FutureTask<>(new NamePrompt(message));
+			Platform.runLater(futureTask);
+			try {
+			    out.println(futureTask.get());
+			} catch(InterruptedException | ExecutionException ex) {}
 		}
 	}
 
